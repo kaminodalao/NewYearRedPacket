@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>领取红包</title>
+
+</head>
+<style>
+    * {
+        margin: 0;
+    }
+
+    html,
+    body {
+        height: 100%;
+        color: gold;
+    }
+
+    .pack {
+        height: 100%;
+        background-color: red;
+    }
+
+    h1 {
+        text-align: center;
+        position: relative;
+        top: 20%;
+        font-size: 40px;
+    }
+
+    .select {
+        display: none;
+        height: 50px;
+        position: relative;
+        top: 30%;
+        width: 100%;
+        text-align: center;
+    }
+
+    .left,
+    .right {
+        width: 80%;
+        margin: 0 auto;
+        margin-top: 20px;
+        border: gold 1px solid;
+    }
+
+    .left {}
+
+    .right {}
+
+    .note {
+        margin-top: 10px;
+    }
+
+    .over {
+        display: none;
+        position: relative;
+        top: 30%;
+        text-align: center;
+    }
+</style>
+<script>
+
+    const owner = "namename" //owner用于设置一个以owner值为名称的cookie，判断是否领取过红包
+    //红包链接时QQ面对面红包的二维码
+    const big = "https://mqq.tenpay.com/qrhb?c=xxxxxxxxxxxxxx" //大红包，点击完成任务
+    const small = "https://mqq.tenpay.com/qrhb?c=xxxxxxxxxxxx" //小红包，点击立即领取
+
+    let running = false
+
+    function setCookie(cname, cvalue, exdays) {
+
+        let d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires=" + d.toGMTString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+
+        console.log(document.cookie)
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+
+    function openSmall() {
+        console.log("open small")
+        setCookie(owner, "over", 360)
+        window.location.href = small
+    }
+
+    function openBig() {
+        if (running) {
+            return
+        }
+        running = true
+        console.log("open big")
+
+        let count = 0
+        let result = 10
+        let info = document.getElementById("info")
+        const getnum = setInterval(function () {
+            if (count > 20) {
+                startBigTask(result)
+                clearInterval(getnum)
+            }
+            result = randomNum(20, 60)
+            console.log(result)
+            info.innerText = "正在抽取幸运数字 " + result
+            count++
+        }, 100)
+
+    }
+
+    function startBigTask(result) {
+        alert("连续点击确定领取红包")
+        alert("中途取消红包就没啦")
+        alert("开始！")
+        setCookie(owner, "over", 360)
+        for (let i = 0; i < result - 3; i++) {
+            alert("新年快乐!剩余" + (result - 3 - i))
+        }
+
+        window.location.href = big
+    }
+
+    function randomNum(minNum, maxNum) {
+        switch (arguments.length) {
+            case 1:
+                return parseInt(Math.random() * minNum + 1, 10);
+                break;
+            case 2:
+                return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+                break;
+            default:
+                return 0;
+                break;
+        }
+    } 
+</script>
+
+<body>
+    <div class="pack">
+        <h1>KAMINO的新年红包</h1>
+
+        <div class="select" id="select">
+            <div class="left" onclick="openSmall()">
+                <div>
+                    <h2>立即领取</h2>
+                    <p>0.01~0.99元</p>
+                </div>
+            </div>
+            <div class="right" onclick="openBig()">
+                <div>
+                    <h2 id="info">任务红包</h2>
+                    <p>最高49999元</p>
+                </div>
+            </div>
+            <p class="note">立即领取和任务红包只能选择一个哦</p>
+        </div>
+
+        <div class="over" id="over">
+            <h2>今年红包已领取，请等待下一年。</h2>
+        </div>
+
+    </div>
+</body>
+<script>
+    if (getCookie(owner) !== "") {
+        alert("已领取红包")
+        document.getElementById("select").style.display = "none"
+        document.getElementById("over").style.display = "block"
+    } else {
+        document.getElementById("select").style.display = "block"
+        document.getElementById("over").style.display = "none"
+    }
+
+</script>
+
+</html>
